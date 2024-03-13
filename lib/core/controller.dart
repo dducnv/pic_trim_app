@@ -3,7 +3,16 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pic_trim_app/core/exception/pic_trim_exception.dart';
+
+enum RoudedCorner {
+  all,
+  topLeft,
+  topRight,
+  bottomLeft,
+  bottomRight,
+}
 
 final class PicTrimController {
   /// Stores the size of the image to be cropped.
@@ -16,6 +25,16 @@ final class PicTrimController {
   final cropRectNotifier = ValueNotifier<Rect?>(null);
 
   ValueNotifier<double> borderRadiusNotifier = ValueNotifier<double>(0);
+
+  ValueNotifier<double> borderRadiusTopLeftNotifier = ValueNotifier<double>(0);
+  ValueNotifier<double> borderRadiusTopRightNotifier = ValueNotifier<double>(0);
+  ValueNotifier<double> borderRadiusBottomLeftNotifier =
+      ValueNotifier<double>(0);
+  ValueNotifier<double> borderRadiusBottomRightNotifier =
+      ValueNotifier<double>(0);
+
+  ValueNotifier<RoudedCorner> roundedCornerNotifier =
+      ValueNotifier<RoudedCorner>(RoudedCorner.all);
 
   /// Stores the [CropMode] of the image to be cropped.
 
@@ -39,7 +58,6 @@ final class PicTrimController {
 
   /// Sets the new crop [Rect] in the [ValueNotifier].
   set cropRect(Rect? value) => cropRectNotifier.value = value;
-
 
   Size get cropSize {
     if ((cropRect, imageRect, imageSize)
@@ -77,17 +95,34 @@ final class PicTrimController {
       final pictureRecorder = ui.PictureRecorder();
       final canvas = Canvas(pictureRecorder);
 
-
       final rect = Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble());
+
+      RoudedCorner roundedCorners = roundedCornerNotifier.value;
 
       // Create the path
       final areaPath = Path()
         ..addRRect(RRect.fromRectAndCorners(
           rect,
-          topLeft: Radius.circular(borderRadiusNotifier.value),
-          topRight: Radius.circular(borderRadiusNotifier.value),
-          bottomLeft: Radius.circular(borderRadiusNotifier.value),
-          bottomRight: Radius.circular(borderRadiusNotifier.value),
+          topLeft: Radius.circular(
+            roundedCorners == RoudedCorner.all
+                ? borderRadiusNotifier.value
+                : borderRadiusTopLeftNotifier.value,
+          ),
+          topRight: Radius.circular(
+            roundedCorners == RoudedCorner.all
+                ? borderRadiusNotifier.value
+                : borderRadiusTopRightNotifier.value,
+          ),
+          bottomLeft: Radius.circular(
+            roundedCorners == RoudedCorner.all
+                ? borderRadiusNotifier.value
+                : borderRadiusBottomLeftNotifier.value,
+          ),
+          bottomRight: Radius.circular(
+            roundedCorners == RoudedCorner.all
+                ? borderRadiusNotifier.value
+                : borderRadiusBottomRightNotifier.value,
+          ),
         ));
 
       canvas.clipPath(areaPath);
@@ -96,7 +131,8 @@ final class PicTrimController {
 
       canvas.drawImageRect(
         image,
-        Rect.fromLTWH(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble()),
+        Rect.fromLTWH(
+            x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble()),
         rect,
         Paint()..isAntiAlias = true,
       );
@@ -126,7 +162,6 @@ final class PicTrimController {
     });
     return completer.future;
   }
-
 
   void dispose() {
     imageSizeNotifier.dispose();

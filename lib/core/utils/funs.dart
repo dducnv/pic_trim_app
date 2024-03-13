@@ -8,5 +8,7 @@ void openUrl(String link,{
       Uri.parse(link),
       mode: mode ?? LaunchMode.externalApplication,
     );
+  }else{
+    print('Could not launch $link');
   }
 }

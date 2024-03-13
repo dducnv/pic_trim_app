@@ -33,11 +33,16 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> initAddressSaveImage() async {
+    final path = Directory("/storage/emulated/0/Download/PicTrim");
+    if (!path.existsSync()) {
+      path.createSync();
+    }
     final value = await PrefHelper().readString(PrefKeys.addressSaveImage);
     if (value == null) {
       _addressSaveImage = '';
+
       if (Platform.isAndroid) {
-        _addressSaveImage = "/storage/emulated/0/Download";
+        _addressSaveImage = path.path;
       }
       if (Platform.isIOS) {
         Directory? documents = await getDownloadsDirectory();
@@ -52,7 +57,6 @@ class AppProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
-
 
   Future<void> setSaveImageSuccess(bool value) async {
     _saveImageSuccess = value;

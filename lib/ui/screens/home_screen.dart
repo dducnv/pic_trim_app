@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,6 +11,7 @@ import 'package:pic_trim_app/ui/screens/controller.dart';
 import 'package:pic_trim_app/ui/widgets.dart';
 import 'package:pic_trim_app/ui/widgets/notify_save_image.dart';
 import 'package:provider/provider.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,12 +22,41 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   Uint8List? _bytes;
+  late StreamSubscription _intentSub;
+  final _sharedFiles = <SharedMediaFile>[];
   late PicTrimController controller;
 
   @override
   void initState() {
     super.initState();
     controller = PicTrimController();
+
+    _intentSub = ReceiveSharingIntent.getMediaStream()
+        .listen((List<SharedMediaFile> value) {
+      setState(() {
+        _sharedFiles.addAll(value);
+        if (_sharedFiles.isNotEmpty) {
+          final file = File(_sharedFiles[0].path);
+          final bytes = file.readAsBytesSync();
+          _bytes = bytes;
+        }
+      });
+    });
+
+    ReceiveSharingIntent.getInitialMedia().then((value) {
+      setState(() {
+        _sharedFiles.clear();
+        _sharedFiles.addAll(value);
+
+        if (_sharedFiles.isNotEmpty) {
+          final file = File(_sharedFiles[0].path);
+          final bytes = file.readAsBytesSync();
+          _bytes = bytes;
+        }
+        ReceiveSharingIntent.reset();
+      });
+    });
+
     context.read<AppProvider>().initAddressSaveImage();
   }
 
@@ -40,9 +72,28 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  ValueListenable getNotifier() {
+    if (controller.roundedCornerNotifier.value == RoudedCorner.all) {
+      return controller.borderRadiusNotifier;
+    } else if (controller.roundedCornerNotifier.value == RoudedCorner.topLeft) {
+      return controller.borderRadiusTopLeftNotifier;
+    } else if (controller.roundedCornerNotifier.value ==
+        RoudedCorner.topRight) {
+      return controller.borderRadiusTopRightNotifier;
+    } else if (controller.roundedCornerNotifier.value ==
+        RoudedCorner.bottomLeft) {
+      return controller.borderRadiusBottomLeftNotifier;
+    } else if (controller.roundedCornerNotifier.value ==
+        RoudedCorner.bottomRight) {
+      return controller.borderRadiusBottomRightNotifier;
+    }
+    return controller.borderRadiusNotifier;
+  }
+
   @override
   void dispose() {
     controller.dispose();
+    _intentSub.cancel();
     super.dispose();
   }
 
@@ -67,107 +118,121 @@ class HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: ValueListenableBuilder(
-          valueListenable: controller.borderRadiusNotifier,
-          builder: (context, borderRadius, child) {
-            return ValueListenableBuilder(
-                valueListenable: controller.cropRectNotifier,
-                builder: (context, cropRect, child) {
-                  bool isInableSaveButton = _bytes != null &&
-                      (cropRect != controller.imageRect || borderRadius > 0);
-                  return Ink(
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    decoration: BoxDecoration(
-                      color: isInableSaveButton
-                          ? Colors.deepPurple[400]
-                          : darkModeEnabled
-                              ? Colors.grey[800]
-                              : Colors.grey[400],
-                      borderRadius: BorderRadius.circular(30),
+      floatingActionButton: _bytes == null
+          ? const SizedBox.shrink()
+          : ValueListenableBuilder(
+              valueListenable: getNotifier(),
+              builder: (context, borderRadius, child) {
+                bool isInableSaveButton = _bytes != null &&
+                    (borderRadius > 0 || controller.cropRect != null);
+
+                return Ink(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  decoration: BoxDecoration(
+                    color: isInableSaveButton
+                        ? Colors.deepPurple[400]
+                        : darkModeEnabled
+                            ? Colors.grey[800]
+                            : Colors.grey[400],
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(30),
+                    onTap: () async {
+                      saveImage();
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Icons.check, color: Colors.white),
                     ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(30),
-                      onTap: () async {
-                        saveImage();
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Icon(Icons.check, color: Colors.white),
-                      ),
-                    ),
-                  );
-                });
-          }),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.height * 0.53,
-              child: _bytes != null
-                  ? Consumer<PicEditProvider>(
-                      builder: (context, data, child) {
-                        return CropViewArea(
-                          bytes: _bytes!,
-                          controller: controller,
-                          aspectRatio:
-                              data.aspectRatio == 0 ? null : data.aspectRatio,
-                        );
-                      },
-                    )
-                  : Center(
-                      child: InkWell(
-                        splashColor: Colors.transparent,
-                        onTap: imagePicker,
-                        child: Icon(
-                          Icons.add_photo_alternate_outlined,
-                          size: 100,
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ),
-            ),
-            SliderRoundCorner(controller: controller),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                height: 35,
-                child: Row(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          controller.cropRectNotifier.value =
-                              controller.imageRect;
-                        },
-                        icon: const Icon(
-                          Icons.restore,
-                          size: 20,
-                        )),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Selector<PicEditProvider, double>(
-                        selector: (context, data) => data.aspectRatio,
-                        builder: (context, data, child) {
-                          return AspectRatioList(
-                            onAspectRatioChanged: (value) {
-                              context
-                                  .read<PicEditProvider>()
-                                  .setAspectRatio(value);
-                            },
-                            aspectRatio: data,
-                          );
-                        },
-                      ),
-                    )
-                  ],
+                  ),
+                );
+              }),
+      body: _bytes == null
+          ? Center(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                splashColor: Colors.transparent,
+                onTap: imagePicker,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.add_photo_alternate_outlined,
+                    size: 100,
+                    color: Colors.grey[500],
+                  ),
                 ),
               ),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: MediaQuery.of(context).size.height * 0.53,
+                        child: Consumer<PicEditProvider>(
+                          builder: (context, data, child) {
+                            return CropViewArea(
+                              bytes: _bytes!,
+                              controller: controller,
+                              aspectRatio: data.aspectRatio == 0
+                                  ? null
+                                  : data.aspectRatio,
+                            );
+                          },
+                        ),
+                      ),
+                      SliderRoundCorner(controller: controller),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          height: 35,
+                          child: Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    controller.cropRectNotifier.value =
+                                        controller.imageRect;
+                                    context
+                                        .read<PicEditProvider>()
+                                        .setAspectRatio(0);
+                                  },
+                                  icon: const Icon(
+                                    Icons.restore,
+                                    size: 20,
+                                  )),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Selector<PicEditProvider, double>(
+                                  selector: (context, data) => data.aspectRatio,
+                                  builder: (context, data, child) {
+                                    return AspectRatioList(
+                                      onAspectRatioChanged: (value) {
+                                        context
+                                            .read<PicEditProvider>()
+                                            .setAspectRatio(value);
+                                      },
+                                      aspectRatio: data,
+                                    );
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const ChangeDirectorSave(),
+                      const NotifySaveImage()
+                    ],
+                  )
+                ],
+              ),
             ),
-            const ChangeDirectorSave(),
-            const NotifySaveImage()
-          ],
-        ),
-      ),
     );
   }
 }

@@ -1,14 +1,20 @@
 part of 'mask.dart';
 
 class RoundedCorners extends CropMask {
-  final double radius;
+  final double radiusTopLeft;
+  final double radiusTopRight;
+  final double radiusBottomLeft;
+  final double radiusBottomRight;
   final Color? color;
 
   const RoundedCorners({
     this.color,
-    required this.radius,
     required super.rect,
     required super.maskOptions,
+    required this.radiusTopLeft,
+    required this.radiusTopRight,
+    required this.radiusBottomLeft,
+    required this.radiusBottomRight,
   });
 
   @override
@@ -18,10 +24,11 @@ class RoundedCorners extends CropMask {
     final Path areaPath = Path()
       ..addRRect(RRect.fromRectAndCorners(
         rect,
-        topLeft: Radius.circular(radius),
-        topRight: Radius.circular(radius),
-        bottomLeft: Radius.circular(radius),
-        bottomRight: Radius.circular(radius),
+        topLeft: Radius.circular(radiusTopLeft),
+        topRight: Radius.circular(radiusTopRight),
+        bottomLeft: Radius.circular(radiusBottomLeft),
+        bottomRight: Radius.circular(radiusBottomRight),
+
       ));
     final Path maskPath = Path.combine(
       PathOperation.difference,

@@ -21,6 +21,7 @@ extension HomeScreenController on HomeScreenState {
       final file = File('$address/trim_pic_$date.png');
       await file.writeAsBytes(byteImage);
       await ImageGallerySaver.saveFile(file.path, name: 'trim_pic_$date.png');
+      // ignore: use_build_context_synchronously
       context.read<AppProvider>().setSaveImageSuccess(true);
     }
   }
@@ -32,26 +33,28 @@ extension HomeScreenController on HomeScreenState {
         return SizedBox(
           height: MediaQuery.of(context).size.height,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 40,
-                      height: 3,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.grey,
-                      ),
-                    ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  width: 50,
+                  height: 5,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: Colors.grey,
                   ),
-                ],
+                ),
               ),
               ListTile(
                 onTap: () {
-                  openUrl('mailto:contact@dducnv.dev');
+                  final Uri params = Uri(
+                      scheme: 'mailto',
+                      path: 'contact@dducnv.dev',
+                    );
+                  String url = params.toString();
+                  openUrl(url);
                 },
                 leading: const Icon(Icons.mail_outline),
                 title: const Text('Feature Requests and Bug Reports'),

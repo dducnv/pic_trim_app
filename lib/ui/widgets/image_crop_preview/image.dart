@@ -95,18 +95,31 @@ class _CropImageState extends State<_CropImage> {
         child: AnimatedBuilder(
           animation: Listenable.merge([
             _controller.cropRectNotifier,
+            _controller.roundedCornerNotifier,
             _controller.borderRadiusNotifier,
+            _controller.borderRadiusBottomLeftNotifier,
+            _controller.borderRadiusBottomRightNotifier,
+            _controller.borderRadiusTopLeftNotifier,
+            _controller.borderRadiusTopRightNotifier,
           ]),
           builder: (context, child) {
             final cropRect = _controller.cropRect;
             if (cropRect == null) {
               return widget.loadingWidget;
             }
+
+
+            RoudedCorner roundedCorners = _controller.roundedCornerNotifier.value;
+
             return CustomPaint(
               foregroundPainter: RoundedCorners(
                 rect: cropRect,
                 maskOptions: widget.maskOptions,
-                radius: _controller.borderRadiusNotifier.value ,
+                radiusTopLeft: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusTopLeftNotifier.value,
+                radiusTopRight: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusTopRightNotifier.value,
+                radiusBottomLeft: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusBottomLeftNotifier.value,
+                radiusBottomRight: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusBottomRightNotifier.value,
+                color: Colors.white,
               ),
               willChange: true,
               child: child,
