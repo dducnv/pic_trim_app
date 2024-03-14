@@ -19,7 +19,7 @@ class RoundedCorners extends CropMask {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Rect screenRect = Offset.zero & size;
+    final Rect screenRect = Offset.zero & Size(double.parse(size.width.round().toString()), double.parse(size.height.round().toString()));
 
     final Path areaPath = Path()
       ..addRRect(RRect.fromRectAndCorners(

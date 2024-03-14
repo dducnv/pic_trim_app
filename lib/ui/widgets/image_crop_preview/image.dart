@@ -121,14 +121,16 @@ class _CropImageState extends State<_CropImage> {
                 radiusBottomRight: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusBottomRightNotifier.value,
                 color: Colors.white,
               ),
-              willChange: true,
-              child: child,
+              willChange: false,
+              child: SizedBox(
+                child: Image(
+                  image: widget.image,
+                  fit: BoxFit.contain,
+                ),
+              ),
             );
           },
-          child: Image(
-            image: widget.image,
-            fit: BoxFit.contain,
-          ),
+          child:SizedBox.shrink(),
         ),
       ),
     );

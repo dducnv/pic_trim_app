@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pic_trim_app/core/controller.dart';
 import 'package:pic_trim_app/provider.dart';
@@ -99,7 +98,6 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    bool darkModeEnabled = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -120,34 +118,23 @@ class HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: _bytes == null
           ? const SizedBox.shrink()
-          : ValueListenableBuilder(
-              valueListenable: getNotifier(),
-              builder: (context, borderRadius, child) {
-                bool isInableSaveButton = _bytes != null &&
-                    (borderRadius > 0 || controller.cropRect != null);
-
-                return Ink(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  decoration: BoxDecoration(
-                    color: isInableSaveButton
-                        ? Colors.deepPurple[400]
-                        : darkModeEnabled
-                            ? Colors.grey[800]
-                            : Colors.grey[400],
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(30),
-                    onTap: () async {
-                      saveImage();
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.check, color: Colors.white),
-                    ),
-                  ),
-                );
-              }),
+          : Ink(
+              width: MediaQuery.of(context).size.width * 0.6,
+              decoration: BoxDecoration(
+                color: Colors.deepPurple[400],
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () async {
+                  saveImage();
+                },
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(Icons.check, color: Colors.white),
+                ),
+              ),
+            ),
       body: _bytes == null
           ? Center(
               child: InkWell(

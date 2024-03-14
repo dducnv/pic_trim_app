@@ -51,7 +51,7 @@ extension HomeScreenController on HomeScreenState {
                 onTap: () {
                   final Uri params = Uri(
                       scheme: 'mailto',
-                      path: 'contact@dducnv.dev',
+                      path: 'contact@dducnv.com',
                     );
                   String url = params.toString();
                   openUrl(url);

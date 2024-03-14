@@ -85,61 +85,51 @@ final class PicTrimController {
           final Size imageSize,
           final Uint8List bytes,
         )) {
-      print('cropRect: $cropRect');
-
-      final x = (cropRect.left / imageRect.width * imageSize.width).toInt();
-      final y = (cropRect.top / imageRect.height * imageSize.height).toInt();
-      final width = cropSize.width.toInt();
-      final height = cropSize.height.toInt();
+      final x = (cropRect.left / imageRect.width * imageSize.width);
+      final y = (cropRect.top / imageRect.height * imageSize.height);
+      final width = cropSize.width;
+      final height = cropSize.height;
 
       final pictureRecorder = ui.PictureRecorder();
       final canvas = Canvas(pictureRecorder);
 
-      final rect = Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble());
+      final rect = Rect.fromLTWH(0, 0, width, height);
 
       RoudedCorner roundedCorners = roundedCornerNotifier.value;
 
       // Create the path
-      final areaPath = Path()
-        ..addRRect(RRect.fromRectAndCorners(
-          rect,
-          topLeft: Radius.circular(
-            roundedCorners == RoudedCorner.all
-                ? borderRadiusNotifier.value
-                : borderRadiusTopLeftNotifier.value,
-          ),
-          topRight: Radius.circular(
-            roundedCorners == RoudedCorner.all
-                ? borderRadiusNotifier.value
-                : borderRadiusTopRightNotifier.value,
-          ),
-          bottomLeft: Radius.circular(
-            roundedCorners == RoudedCorner.all
-                ? borderRadiusNotifier.value
-                : borderRadiusBottomLeftNotifier.value,
-          ),
-          bottomRight: Radius.circular(
-            roundedCorners == RoudedCorner.all
-                ? borderRadiusNotifier.value
-                : borderRadiusBottomRightNotifier.value,
-          ),
-        ));
 
-      canvas.clipPath(areaPath);
+      canvas.clipRRect(
+        RRect.fromRectAndCorners(
+          rect,
+          topLeft: Radius.circular(roundedCorners == RoudedCorner.all
+              ? borderRadiusNotifier.value * 2.24
+              : borderRadiusTopLeftNotifier.value * 2.24),
+          topRight: Radius.circular(roundedCorners == RoudedCorner.all
+              ? borderRadiusNotifier.value * 2.24
+              : borderRadiusTopRightNotifier.value * 2.24),
+          bottomLeft: Radius.circular(roundedCorners == RoudedCorner.all
+              ? borderRadiusNotifier.value * 2.24
+              : borderRadiusBottomLeftNotifier.value * 2.24),
+          bottomRight: Radius.circular(roundedCorners == RoudedCorner.all
+              ? borderRadiusNotifier.value * 2.24
+              : borderRadiusBottomRightNotifier.value * 2.24),
+        ),
+        doAntiAlias: true
+      );
 
       final ui.Image image = await loadUiImage(ByteData.view(bytes.buffer));
 
       canvas.drawImageRect(
         image,
-        Rect.fromLTWH(
-            x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble()),
+        Rect.fromLTWH(x, y, width, height),
         rect,
         Paint()..isAntiAlias = true,
       );
 
       final roundedImage = await pictureRecorder.endRecording().toImage(
-            width.toInt(),
-            height.toInt(),
+            width.round(),
+            height.round(),
           );
 
       final roundedBytes = await roundedImage.toByteData(
@@ -168,5 +158,10 @@ final class PicTrimController {
     imageRectNotifier.dispose();
     cropRectNotifier.dispose();
     borderRadiusNotifier.dispose();
+    borderRadiusTopLeftNotifier.dispose();
+    borderRadiusTopRightNotifier.dispose();
+    borderRadiusBottomLeftNotifier.dispose();
+    borderRadiusBottomRightNotifier.dispose();
+    roundedCornerNotifier.dispose();
   }
 }

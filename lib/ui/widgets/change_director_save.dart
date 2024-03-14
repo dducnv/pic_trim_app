@@ -94,138 +94,167 @@ class _ChangeDirectorSaveState extends State<ChangeDirectorSave> {
               child: ValueListenableBuilder(
                 valueListenable: listImage,
                 builder: (context, value, child) {
-                  return SingleChildScrollView(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.7,
-                      child: value.isEmpty
-                          ? Center(
-                              child: Icon(
-                                Icons.image_not_supported_outlined,
-                                size: 100,
-                                color: Colors.grey[400],
-                              ),
-                            )
-                          : GridView.count(
-                              padding: const EdgeInsets.all(20),
-                              shrinkWrap: value.length > 2,
-                              physics: value.length > 2
-                                  ? const NeverScrollableScrollPhysics()
-                                  : const AlwaysScrollableScrollPhysics(),
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                              crossAxisCount: 2,
-                              children: value.map((FileSystemEntity file) {
-                                return InkWell(
-                                  onTap: () async {
-                                    showDialog(
-                                      context: context,
-                                      useSafeArea: false,
-                                      builder: (_) => imageDialog(file.path, _),
-                                    );
-                                  },
-                                  onLongPress: () async {
-                                    final result = await Share.shareXFiles(
-                                      [XFile(file.path)],
-                                      text: 'Image From PicTrim App',
-                                    );
-                                    if (result.status ==
-                                        ShareResultStatus.success) {
-                                      // ignore: use_build_context_synchronously
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Shared'),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  child: Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: file is File &&
-                                                (file.path.endsWith('.jpg') ||
-                                                    file.path
-                                                        .endsWith('.png') ||
-                                                    file.path.endsWith('.jpeg'))
-                                            ? Image.file(
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: value.isEmpty
+                        ? Center(
+                            child: Icon(
+                              Icons.image_not_supported_outlined,
+                              size: 100,
+                              color: Colors.grey[400],
+                            ),
+                          )
+                        : GridView.count(
+                            padding: const EdgeInsets.all(20),
+                            shrinkWrap: true,
+                            physics: const ScrollPhysics(),
+                            
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            crossAxisCount: 2,
+                            children: value.map((FileSystemEntity file) {
+                              return file is File &&
+                                      (file.path.endsWith('.jpg') ||
+                                          file.path.endsWith('.png') ||
+                                          file.path.endsWith('.jpeg'))
+                                  ? InkWell(
+                                      onTap: () async {
+                                        showDialog(
+                                          context: context,
+                                          useSafeArea: false,
+                                          builder: (_) =>
+                                              imageDialog(file.path, _),
+                                        );
+                                      },
+                                      onLongPress: () async {
+                                        final result =
+                                            await Share.shareXFiles(
+                                          [XFile(file.path)],
+                                          text: 'Image From PicTrim App',
+                                        );
+                                        if (result.status ==
+                                            ShareResultStatus.success) {
+                                          // ignore: use_build_context_synchronously
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Shared'),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Image.file(
                                                 file,
                                                 fit: BoxFit.cover,
-                                              )
-                                            : const SizedBox.shrink(),
+                                              )),
+                                          Positioned(
+                                            top: 0,
+                                            left: 0,
+                                            child: IconButton(
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStateProperty.all(
+                                                        Colors.black45),
+                                                shape:
+                                                    MaterialStateProperty.all(
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        50))),
+                                              ),
+                                              enableFeedback: true,
+                                              color: Colors.red[700],
+                                              onPressed: () async {
+
+                                                //popup confirm delete
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text('Delete'),
+                                                      content: const Text('Are you sure?'),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          child: const Text('Cancel'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            file.delete();
+                                                            getListImage();
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          child: const Text('Delete'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              
+                                              },
+                                              icon: const Icon(
+                                                Icons.delete,
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            bottom: 0,
+                                            right: 0,
+                                            child: IconButton(
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStateProperty.all(
+                                                        Colors.black45),
+                                                shape:
+                                                    MaterialStateProperty.all(
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        50))),
+                                              ),
+                                              enableFeedback: true,
+                                              color: Colors.white,
+                                              onPressed: () async {
+                                                final result =
+                                                    await Share.shareXFiles([
+                                                  XFile(file.path)
+                                                ], text: 'Image From PicTrim App');
+                                                if (result.status ==
+                                                    ShareResultStatus
+                                                        .success) {
+                                                  // ignore: use_build_context_synchronously
+                                                  ScaffoldMessenger.of(
+                                                          context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text('Shared'),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              icon: const Icon(
+                                                Icons.share,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      Positioned(
-                                        top: 0,
-                                        left: 0,
-                                        child: IconButton(
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStateProperty.all(
-                                                    Colors.black45),
-                                            shape: MaterialStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            50))),
-                                          ),
-                                          enableFeedback: true,
-                                          color: Colors.red[700],
-                                          onPressed: () async {
-                                            await file.delete();
-                                            getListImage();
-                                          },
-                                          icon: const Icon(
-                                            Icons.delete,
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        bottom: 0,
-                                        right: 0,
-                                        child: IconButton(
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStateProperty.all(
-                                                    Colors.black45),
-                                            shape: MaterialStateProperty.all(
-                                                RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            50))),
-                                          ),
-                                          enableFeedback: true,
-                                          color: Colors.white,
-                                          onPressed: () async {
-                                            final result =
-                                                await Share.shareXFiles([
-                                              XFile(file.path)
-                                            ], text: 'Image From PicTrim App');
-                                            if (result.status ==
-                                                ShareResultStatus.success) {
-                                              // ignore: use_build_context_synchronously
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                  content: Text('Shared'),
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          icon: const Icon(
-                                            Icons.share,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                    ),
+                                    )
+                                  : const SizedBox.shrink();
+                            }).toList(),
+                          ),
                   );
                 },
               ),

@@ -117,20 +117,6 @@ class _SliderRoundCornerState extends State<SliderRoundCorner> {
                             },
                           ),
                           _roundCornerButton(
-                            valueListenable:
-                                widget.controller.borderRadiusTopRightNotifier,
-                            suffixes: const SizedBox(
-                              width: 5,
-                            ),
-                            selected:
-                                widget.controller.roundedCornerNotifier.value ==
-                                    RoudedCorner.topRight,
-                            onTap: () {
-                              widget.controller.roundedCornerNotifier.value =
-                                  RoudedCorner.topRight;
-                            },
-                          ),
-                          _roundCornerButton(
                             valueListenable: widget
                                 .controller.borderRadiusBottomLeftNotifier,
                             suffixes: const SizedBox(
@@ -143,6 +129,20 @@ class _SliderRoundCornerState extends State<SliderRoundCorner> {
                             onTap: () {
                               widget.controller.roundedCornerNotifier.value =
                                   RoudedCorner.bottomLeft;
+                            },
+                          ),
+                          _roundCornerButton(
+                            valueListenable:
+                                widget.controller.borderRadiusTopRightNotifier,
+                            suffixes: const SizedBox(
+                              width: 5,
+                            ),
+                            selected:
+                                widget.controller.roundedCornerNotifier.value ==
+                                    RoudedCorner.topRight,
+                            onTap: () {
+                              widget.controller.roundedCornerNotifier.value =
+                                  RoudedCorner.topRight;
                             },
                           ),
                           _roundCornerButton(
@@ -232,10 +232,16 @@ class _SliderRoundCornerState extends State<SliderRoundCorner> {
       int? quarterTurns,
       bool selected = false,
       required ValueListenable valueListenable}) {
+    bool darkModeEnabled = Theme.of(context).brightness == Brightness.dark;
+
     return Ink(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
-        color: selected ? Colors.grey[200] : null,
+        color: selected
+            ? darkModeEnabled
+                ? Colors.grey[700]
+                : Colors.grey[200]
+            : null,
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(50),
