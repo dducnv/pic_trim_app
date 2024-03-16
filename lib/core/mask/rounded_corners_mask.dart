@@ -42,6 +42,7 @@ class RoundedCorners extends CropMask {
     borderPaintCus.color = color ?? Colors.white;
     borderPaintCus.style = PaintingStyle.stroke;
     borderPaintCus.strokeWidth = 0.5;
+    borderPaintCus.isAntiAlias = true;
 
     canvas
       ..drawPath(maskPath, backgroundPaint)

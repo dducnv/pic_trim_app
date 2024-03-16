@@ -42,6 +42,8 @@ class _CropImageState extends State<_CropImage> {
 
   @override
   Widget build(BuildContext context) {
+          bool darkModeEnabled = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: EdgeInsets.all(
         widget.dragPointSize / 2 + widget.hitSize / 2,
@@ -119,18 +121,16 @@ class _CropImageState extends State<_CropImage> {
                 radiusTopRight: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusTopRightNotifier.value,
                 radiusBottomLeft: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusBottomLeftNotifier.value,
                 radiusBottomRight: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusBottomRightNotifier.value,
-                color: Colors.white,
+                color: !darkModeEnabled ? Colors.grey[300] : Colors.white,
               ),
-              willChange: false,
-              child: SizedBox(
-                child: Image(
-                  image: widget.image,
-                  fit: BoxFit.contain,
-                ),
+              child: Image(
+                image: widget.image,
+                fit: BoxFit.fill,
+                width: double.parse(_controller.imageRect!.width.round().toString()),
+                height: double.parse(_controller.imageRect!.height.round().toString()),
               ),
             );
           },
-          child:SizedBox.shrink(),
         ),
       ),
     );

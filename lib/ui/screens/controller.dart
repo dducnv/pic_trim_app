@@ -6,6 +6,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:pic_trim_app/core/local/local_db.dart';
 import 'package:pic_trim_app/core/utils.dart';
+import 'package:pic_trim_app/main.dart';
 import 'package:pic_trim_app/provider.dart';
 import 'package:pic_trim_app/ui/screens/home_screen.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +52,7 @@ extension HomeScreenController on HomeScreenState {
                 onTap: () {
                   final Uri params = Uri(
                       scheme: 'mailto',
-                      path: 'contact@dducnv.com',
+                      path: 'contact@dducnv.dev',
                     );
                   String url = params.toString();
                   openUrl(url);
@@ -72,6 +73,15 @@ extension HomeScreenController on HomeScreenState {
                 onTap: () => showBottomSheetReadMd(
                     'assets/md/terms_of_service.md',
                     context: context),
+              ),
+
+              ListTile(
+                leading: const Icon(Icons.star_outline),
+                onTap: () {
+                  inAppReview.requestReview();
+                },
+                title: const Text('Rate this app'),
+               
               ),
               ListTile(
                 onTap: () {

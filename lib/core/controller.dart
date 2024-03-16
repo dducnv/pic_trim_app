@@ -103,17 +103,17 @@ final class PicTrimController {
         RRect.fromRectAndCorners(
           rect,
           topLeft: Radius.circular(roundedCorners == RoudedCorner.all
-              ? borderRadiusNotifier.value * 2.24
-              : borderRadiusTopLeftNotifier.value * 2.24),
+              ? borderRadiusNotifier.value * 1.2
+              : borderRadiusTopLeftNotifier.value * 1.2),
           topRight: Radius.circular(roundedCorners == RoudedCorner.all
-              ? borderRadiusNotifier.value * 2.24
-              : borderRadiusTopRightNotifier.value * 2.24),
+              ? borderRadiusNotifier.value * 1.2
+              : borderRadiusTopRightNotifier.value * 1.2),
           bottomLeft: Radius.circular(roundedCorners == RoudedCorner.all
-              ? borderRadiusNotifier.value * 2.24
-              : borderRadiusBottomLeftNotifier.value * 2.24),
+              ? borderRadiusNotifier.value * 1.2
+              : borderRadiusBottomLeftNotifier.value * 1.2),
           bottomRight: Radius.circular(roundedCorners == RoudedCorner.all
-              ? borderRadiusNotifier.value * 2.24
-              : borderRadiusBottomRightNotifier.value * 2.24),
+              ? borderRadiusNotifier.value * 1.2
+              : borderRadiusBottomRightNotifier.value * 1.2),
         ),
         doAntiAlias: true
       );
@@ -124,7 +124,9 @@ final class PicTrimController {
         image,
         Rect.fromLTWH(x, y, width, height),
         rect,
-        Paint()..isAntiAlias = true,
+        Paint()..isAntiAlias = true
+        ..filterQuality = FilterQuality.high,
+      
       );
 
       final roundedImage = await pictureRecorder.endRecording().toImage(

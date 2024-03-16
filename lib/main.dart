@@ -1,9 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pic_trim_app/core/local/local_db.dart';
 import 'package:pic_trim_app/core/local_pref.dart';
+import 'package:pic_trim_app/firebase_options.dart';
 import 'package:pic_trim_app/provider.dart';
 import 'package:pic_trim_app/ui/screens/home_screen.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +15,9 @@ bool isDarkMode = false;
 final InAppReview inAppReview = InAppReview.instance;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
   var getThemeStorage = await PrefHelper().readBool(PrefKeys.isDarkMode);
   if (getThemeStorage == null) {
     await PrefHelper().saveBool(PrefKeys.isDarkMode, false);

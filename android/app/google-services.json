@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "96165417683",
+    "project_id": "pictrim-46e8f",
+    "storage_bucket": "pictrim-46e8f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96165417683:android:3a58902111173a6ef23a26",
+        "android_client_info": {
+          "package_name": "com.duc_app_lab_ind.pic_trim_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsdK9Cmu6pH1m2qjdjaHnUr65OM73N5fw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96165417683:android:760cf9757de9c080f23a26",
+        "android_client_info": {
+          "package_name": "com.duc_app_lab_ind_pic_trim_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsdK9Cmu6pH1m2qjdjaHnUr65OM73N5fw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
