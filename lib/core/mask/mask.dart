@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pic_trim_app/core/mask/options.dart';
 
 

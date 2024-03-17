@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -23,6 +24,8 @@ final class PicTrimController {
 
   /// Stores the selected crop area within the view.
   final cropRectNotifier = ValueNotifier<Rect?>(null);
+
+  final screenRectNotifier = ValueNotifier<Rect?>(null);
 
   ValueNotifier<double> borderRadiusNotifier = ValueNotifier<double>(0);
 
@@ -97,36 +100,49 @@ final class PicTrimController {
 
       RoudedCorner roundedCorners = roundedCornerNotifier.value;
 
+      double radiusAll = borderRadiusNotifier.value *
+          min(imageSize.width, imageSize.height) /
+          100;
+
+      double radiusTopLeft = borderRadiusNotifier.value *
+          min(imageSize.width, imageSize.height) /
+          100;
+      double radiusTopRight = borderRadiusNotifier.value *
+          min(imageSize.width, imageSize.height) /
+          100;
+      double radiusBottomLeft = borderRadiusNotifier.value *
+          min(imageSize.width, imageSize.height) /
+          100;
+      double radiusBottomRight = borderRadiusNotifier.value *
+          min(imageSize.width, imageSize.height) /
+          100;
+
       // Create the path
 
       canvas.clipRRect(
-        RRect.fromRectAndCorners(
-          rect,
-          topLeft: Radius.circular(roundedCorners == RoudedCorner.all
-              ? borderRadiusNotifier.value * 1.2
-              : borderRadiusTopLeftNotifier.value * 1.2),
-          topRight: Radius.circular(roundedCorners == RoudedCorner.all
-              ? borderRadiusNotifier.value * 1.2
-              : borderRadiusTopRightNotifier.value * 1.2),
-          bottomLeft: Radius.circular(roundedCorners == RoudedCorner.all
-              ? borderRadiusNotifier.value * 1.2
-              : borderRadiusBottomLeftNotifier.value * 1.2),
-          bottomRight: Radius.circular(roundedCorners == RoudedCorner.all
-              ? borderRadiusNotifier.value * 1.2
-              : borderRadiusBottomRightNotifier.value * 1.2),
-        ),
-        doAntiAlias: true
-      );
+          RRect.fromRectAndCorners(
+            rect,
+            topLeft: Radius.circular(roundedCorners == RoudedCorner.all
+                ? radiusAll
+                : radiusTopLeft),
+            topRight: Radius.circular(roundedCorners == RoudedCorner.all
+                ? radiusAll
+                : radiusTopRight),
+            bottomLeft: Radius.circular(roundedCorners == RoudedCorner.all
+                ? radiusAll
+                : radiusBottomLeft),
+            bottomRight: Radius.circular(roundedCorners == RoudedCorner.all
+                ? radiusAll
+                : radiusBottomRight),
+          ),
+          doAntiAlias: true);
 
-      final ui.Image image = await loadUiImage(ByteData.view(bytes.buffer));
-
+      final image = await loadUiImage(bytes.buffer.asByteData());
       canvas.drawImageRect(
         image,
         Rect.fromLTWH(x, y, width, height),
         rect,
-        Paint()..isAntiAlias = true
-        ..filterQuality = FilterQuality.high,
-      
+        Paint()..isAntiAlias = true,
       );
 
       final roundedImage = await pictureRecorder.endRecording().toImage(

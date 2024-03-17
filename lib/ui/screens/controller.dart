@@ -16,7 +16,9 @@ extension HomeScreenController on HomeScreenState {
     String address = context.read<AppProvider>().addressSaveImage;
     if (address.isNotEmpty) {
       final byteImage = await controller.cropAndRoundedCorners();
-      //dd-MM-yyyy_hh-mm-ss
+
+   
+      // //dd-MM-yyyy_hh-mm-ss
       final date =
           "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}_${DateTime.now().hour}-${DateTime.now().minute}-${DateTime.now().second}";
       final file = File('$address/trim_pic_$date.png');

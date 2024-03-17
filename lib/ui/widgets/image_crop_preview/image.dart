@@ -65,6 +65,8 @@ class _CropImageState extends State<_CropImage> {
               builder: (context, constraints) {
                 final availableSpace = Offset.zero &
                     Size(constraints.maxWidth, constraints.maxHeight);
+
+  
                 final imageRect = widget.cropUtils.computeImageRect(
                   imageSize: imageSize,
                   availableSpace: availableSpace,
@@ -116,6 +118,9 @@ class _CropImageState extends State<_CropImage> {
             return CustomPaint(
               foregroundPainter: RoundedCorners(
                 rect: cropRect,
+        
+                width: _controller.imageRect!.width,
+                height: _controller.imageRect!.height,
                 maskOptions: widget.maskOptions,
                 radiusTopLeft: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusTopLeftNotifier.value,
                 radiusTopRight: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusTopRightNotifier.value,

@@ -7,7 +7,7 @@ final class MaskOptions {
   const MaskOptions({
     this.backgroundColor = Colors.black38,
     this.borderColor = Colors.grey,
-    this.strokeWidth = 2,
+    this.strokeWidth = 1,
     this.aspectRatio,
     this.minSize = 0,
   }) : assert(

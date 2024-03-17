@@ -6,11 +6,17 @@ class RoundedCorners extends CropMask {
   final double radiusBottomLeft;
   final double radiusBottomRight;
   final Color? color;
+  final double? width;
+  final double? height;
+  final Function(Rect screenRect)? onDrawMask; 
 
   const RoundedCorners({
     this.color,
     required super.rect,
     required super.maskOptions,
+    this.width,
+    this.height,
+    this.onDrawMask,
     required this.radiusTopLeft,
     required this.radiusTopRight,
     required this.radiusBottomLeft,
@@ -19,33 +25,35 @@ class RoundedCorners extends CropMask {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Rect screenRect = Offset.zero & Size(double.parse(size.width.round().toString()), double.parse(size.height.round().toString()));
+
+    final Rect screenRect = Offset.zero & size;
+
+    
+    double radiusTl = radiusTopLeft * min(size.width, size.height) / 100;
+    double radiusTr = radiusTopRight * min(size.width, size.height) / 100;
+    double radiusBl = radiusBottomLeft * min(size.width, size.height) / 100;
+    double radiusBr = radiusBottomRight * min(size.width, size.height) / 100;
 
     final Path areaPath = Path()
       ..addRRect(RRect.fromRectAndCorners(
         rect,
-        topLeft: Radius.circular(radiusTopLeft),
-        topRight: Radius.circular(radiusTopRight),
-        bottomLeft: Radius.circular(radiusBottomLeft),
-        bottomRight: Radius.circular(radiusBottomRight),
+        topLeft: Radius.circular(radiusTl),
+        topRight: Radius.circular(radiusTr),
+        bottomLeft: Radius.circular(radiusBl),
+        bottomRight: Radius.circular(radiusBr),
 
       ));
+
+
     final Path maskPath = Path.combine(
       PathOperation.difference,
       Path()..addRect(screenRect),
       areaPath,
     );
-    Paint borderPaintCus = Paint();
 
-    //set radius of the oval
-
-    borderPaintCus.color = color ?? Colors.white;
-    borderPaintCus.style = PaintingStyle.stroke;
-    borderPaintCus.strokeWidth = 0.5;
-    borderPaintCus.isAntiAlias = true;
 
     canvas
       ..drawPath(maskPath, backgroundPaint)
-      ..drawPath(areaPath, borderPaintCus);
+      ..drawPath(areaPath, borderPaint);
   }
 }
