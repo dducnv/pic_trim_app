@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 final class MaskOptions {
   /// Constructs a [MaskOptions].
   const MaskOptions({
-    this.backgroundColor = Colors.black38,
+    this.backgroundColor = Colors.black45,
     this.borderColor = Colors.grey,
     this.strokeWidth = 1,
     this.aspectRatio,

@@ -42,7 +42,7 @@ class _CropImageState extends State<_CropImage> {
 
   @override
   Widget build(BuildContext context) {
-          bool darkModeEnabled = Theme.of(context).brightness == Brightness.dark;
+    bool darkModeEnabled = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: EdgeInsets.all(
@@ -54,6 +54,7 @@ class _CropImageState extends State<_CropImage> {
           if (imageSize == null) {
             return widget.loadingWidget;
           }
+
           return GestureDetector(
             onPanStart: (details) => _isMovingCropLayer = _controller
                     .cropRectNotifier.value
@@ -66,7 +67,6 @@ class _CropImageState extends State<_CropImage> {
                 final availableSpace = Offset.zero &
                     Size(constraints.maxWidth, constraints.maxHeight);
 
-  
                 final imageRect = widget.cropUtils.computeImageRect(
                   imageSize: imageSize,
                   availableSpace: availableSpace,
@@ -75,10 +75,15 @@ class _CropImageState extends State<_CropImage> {
                 WidgetsBinding.instance.addPostFrameCallback(
                   (_) {
                     final cropRect = _controller.cropRect;
+
                     if (cropRect == null) {
                       _controller.cropRect =
                           widget.cropUtils.getInitialRect(imageRect);
                     } else {
+                      _controller.cropSizeNotifier.value = Size(
+                        cropRect.width,
+                        cropRect.height,
+                      );
                       _controller.cropRect =
                           widget.cropUtils.computeCropRectForResizedImageRect(
                         imageRect: imageRect,
@@ -111,28 +116,41 @@ class _CropImageState extends State<_CropImage> {
             if (cropRect == null) {
               return widget.loadingWidget;
             }
+            
 
 
-            RoudedCorner roundedCorners = _controller.roundedCornerNotifier.value;
+
+           
+            RoudedCorner roundedCorners =
+                _controller.roundedCornerNotifier.value;
 
             return CustomPaint(
               foregroundPainter: RoundedCorners(
                 rect: cropRect,
-        
                 width: _controller.imageRect!.width,
                 height: _controller.imageRect!.height,
                 maskOptions: widget.maskOptions,
-                radiusTopLeft: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusTopLeftNotifier.value,
-                radiusTopRight: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusTopRightNotifier.value,
-                radiusBottomLeft: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusBottomLeftNotifier.value,
-                radiusBottomRight: roundedCorners == RoudedCorner.all ? _controller.borderRadiusNotifier.value : _controller.borderRadiusBottomRightNotifier.value,
+                radiusTopLeft: roundedCorners == RoudedCorner.all
+                    ? _controller.borderRadiusNotifier.value
+                    : _controller.borderRadiusTopLeftNotifier.value,
+                radiusTopRight: roundedCorners == RoudedCorner.all
+                    ? _controller.borderRadiusNotifier.value
+                    : _controller.borderRadiusTopRightNotifier.value,
+                radiusBottomLeft: roundedCorners == RoudedCorner.all
+                    ? _controller.borderRadiusNotifier.value
+                    : _controller.borderRadiusBottomLeftNotifier.value,
+                radiusBottomRight: roundedCorners == RoudedCorner.all
+                    ? _controller.borderRadiusNotifier.value
+                    : _controller.borderRadiusBottomRightNotifier.value,
                 color: !darkModeEnabled ? Colors.grey[300] : Colors.white,
               ),
               child: Image(
                 image: widget.image,
                 fit: BoxFit.fill,
-                width: double.parse(_controller.imageRect!.width.round().toString()),
-                height: double.parse(_controller.imageRect!.height.round().toString()),
+                width: double.parse(
+                    _controller.imageRect!.width.round().toString()),
+                height: double.parse(
+                    _controller.imageRect!.height.round().toString()),
               ),
             );
           },

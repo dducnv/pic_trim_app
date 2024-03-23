@@ -1,14 +1,19 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 import 'package:pic_trim_app/core/local_pref.dart';
 import 'package:pic_trim_app/main.dart';
 
 class AppProvider extends ChangeNotifier {
   ThemeMode _themeMode;
   ThemeMode get themeMode => _themeMode;
+
+  bool _isShowOptionRoundedCorner = false;
+  bool get isShowOptionRoundedCorner => _isShowOptionRoundedCorner;
+
+
+  int _tabEditIndex = 0;
+  int get tabEditIndex => _tabEditIndex;
 
   String _addressSaveImage = '';
   String get addressSaveImage => _addressSaveImage;
@@ -33,7 +38,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> initAddressSaveImage() async {
-    final path = Directory("/storage/emulated/0/Download/PicTrim");
+    Directory path = Directory("/storage/emulated/0/Pictures/PicTrim");
     if (!path.existsSync()) {
       path.createSync();
     }
@@ -45,10 +50,7 @@ class AppProvider extends ChangeNotifier {
         _addressSaveImage = path.path;
       }
       if (Platform.isIOS) {
-        Directory? documents = await getDownloadsDirectory();
-        if (documents != null) {
-          _addressSaveImage = documents.path;
-        }
+    
       }
       await PrefHelper()
           .saveString(PrefKeys.addressSaveImage, _addressSaveImage);
@@ -60,10 +62,27 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> setSaveImageSuccess(bool value) async {
     _saveImageSuccess = value;
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(milliseconds: 2500), () {
       _saveImageSuccess = false;
       notifyListeners();
     });
     notifyListeners();
   }
+
+  void setTabEditIndex(int value) {
+    _tabEditIndex = value;
+    notifyListeners();
+  }
+
+  void changePage(int index) {
+    _tabEditIndex = index;
+    notifyListeners();
+  }
+
+  void setShowOptionRoundedCorner(bool value) {
+    _isShowOptionRoundedCorner = value;
+    notifyListeners();
+  }
+
+
 }

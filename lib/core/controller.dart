@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pic_trim_app/core/exception/pic_trim_exception.dart';
 
@@ -26,6 +27,7 @@ final class PicTrimController {
   final cropRectNotifier = ValueNotifier<Rect?>(null);
 
   final screenRectNotifier = ValueNotifier<Rect?>(null);
+  final cropSizeNotifier = ValueNotifier<Size>(const Size(0, 0));
 
   ValueNotifier<double> borderRadiusNotifier = ValueNotifier<double>(0);
 
@@ -104,16 +106,16 @@ final class PicTrimController {
           min(imageSize.width, imageSize.height) /
           100;
 
-      double radiusTopLeft = borderRadiusNotifier.value *
+      double radiusTopLeft = borderRadiusTopLeftNotifier.value *
           min(imageSize.width, imageSize.height) /
           100;
-      double radiusTopRight = borderRadiusNotifier.value *
+      double radiusTopRight = borderRadiusTopRightNotifier.value *
           min(imageSize.width, imageSize.height) /
           100;
-      double radiusBottomLeft = borderRadiusNotifier.value *
+      double radiusBottomLeft = borderRadiusBottomLeftNotifier.value *
           min(imageSize.width, imageSize.height) /
           100;
-      double radiusBottomRight = borderRadiusNotifier.value *
+      double radiusBottomRight = borderRadiusBottomRightNotifier.value *
           min(imageSize.width, imageSize.height) /
           100;
 
@@ -181,5 +183,13 @@ final class PicTrimController {
     borderRadiusBottomLeftNotifier.dispose();
     borderRadiusBottomRightNotifier.dispose();
     roundedCornerNotifier.dispose();
+  }
+
+  void resetBorderRadius() {
+    borderRadiusNotifier.value = 0;
+    borderRadiusTopLeftNotifier.value = 0;
+    borderRadiusTopRightNotifier.value = 0;
+    borderRadiusBottomLeftNotifier.value = 0;
+    borderRadiusBottomRightNotifier.value = 0;
   }
 }

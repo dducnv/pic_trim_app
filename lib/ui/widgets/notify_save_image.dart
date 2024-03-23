@@ -11,10 +11,11 @@ const NotifySaveImage({ super.key });
       return Center(
         child: AnimatedOpacity(
             opacity: value ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 500),
-            child: const Text(
-              'Image saved successfully!',
-              style: TextStyle(color: Colors.green, fontSize: 12),
+            duration: const Duration(milliseconds: 300),
+            child:const Icon(
+              Icons.check,
+              color: Colors.green,
+              size: 25,
             ),
           ),
       );

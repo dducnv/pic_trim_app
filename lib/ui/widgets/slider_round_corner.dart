@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pic_trim_app/core/controller.dart';
+import 'package:pic_trim_app/provider.dart';
+import 'package:provider/provider.dart';
 
 class SliderRoundCorner extends StatefulWidget {
   const SliderRoundCorner({super.key, required this.controller});
@@ -12,7 +14,7 @@ class SliderRoundCorner extends StatefulWidget {
 }
 
 class _SliderRoundCornerState extends State<SliderRoundCorner> {
-  bool _isShowAnimation = false;
+
 
   void setRadius(double value) {
     if (widget.controller.roundedCornerNotifier.value == RoudedCorner.all) {
@@ -53,7 +55,8 @@ class _SliderRoundCornerState extends State<SliderRoundCorner> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return  Selector<AppProvider, bool>(builder: (context, value, child){
+      return  Column(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -63,24 +66,22 @@ class _SliderRoundCornerState extends State<SliderRoundCorner> {
           children: [
             _roundCornerButton(
               valueListenable: widget.controller.borderRadiusNotifier,
-              child: _isShowAnimation
+              child: value
                   ? const Icon(
                       Icons.cancel_outlined,
                       size: 20,
                     )
                   : null,
-              suffixes: !_isShowAnimation
+              suffixes: !value
                   ? const Icon(
                       Icons.arrow_drop_down_rounded,
                       size: 20,
                     )
                   : const SizedBox.shrink(),
               onTap: () {
-                setState(() {
-                  _isShowAnimation = !_isShowAnimation;
-                });
+                context.read<AppProvider>().setShowOptionRoundedCorner(!value);
 
-                if (!_isShowAnimation) {
+                if (value) {
                   widget.controller.roundedCornerNotifier.value =
                       RoudedCorner.all;
                 } else {
@@ -90,15 +91,15 @@ class _SliderRoundCornerState extends State<SliderRoundCorner> {
               },
             ),
             Visibility(
-                visible: _isShowAnimation, child: const SizedBox(width: 5)),
+                visible: value, child: const SizedBox(width: 5)),
             ValueListenableBuilder(
                 valueListenable: widget.controller.roundedCornerNotifier,
                 builder: (context, roundedCorner, child) {
                   return AnimatedOpacity(
-                    opacity: _isShowAnimation ? 1 : 0,
+                    opacity: value ? 1 : 0,
                     duration: const Duration(milliseconds: 500),
                     child: Visibility(
-                      visible: _isShowAnimation,
+                      visible: value,
                       child: Row(
                         children: [
                           _roundCornerButton(
@@ -223,6 +224,9 @@ class _SliderRoundCornerState extends State<SliderRoundCorner> {
             }),
       ],
     );
+    }, selector: (context, provider) => provider.isShowOptionRoundedCorner);
+    
+   
   }
 
   Widget _roundCornerButton(

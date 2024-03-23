@@ -22,8 +22,9 @@ class CropViewArea extends StatelessWidget {
       bytes: bytes,
       maskOptions: MaskOptions(aspectRatio: aspectRatio),
       dragPointBuilder: (size, position) =>const CropDragPoint(
-        size: 8,
+        size: 10,
         color: Colors.deepPurple,
+        
       ),
     );
     return cropPreview;

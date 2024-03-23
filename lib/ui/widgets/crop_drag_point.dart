@@ -5,7 +5,7 @@ class CropDragPoint extends StatelessWidget {
   /// Constructs a [CropDragPoint].
   const CropDragPoint({
     super.key,
-    this.size = 20,
+    this.size = 30,
     this.color = Colors.blue,
   });
 
@@ -18,6 +18,7 @@ class CropDragPoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       width: size,
       height: size,
       decoration: BoxDecoration(

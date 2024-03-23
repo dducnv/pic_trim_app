@@ -50,6 +50,7 @@ class RoundedCorners extends CropMask {
       Path()..addRect(screenRect),
       areaPath,
     );
+    
 
 
     canvas

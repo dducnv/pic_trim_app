@@ -159,6 +159,7 @@ class _CropPreviewState extends State<CropPreview> {
             cropUtils: _cropUtils,
             maskOptions: widget.maskOptions,
             image: _image,
+            
           ),
           _CropDragPoints(
             dragPointBuilder: widget.dragPointBuilder,

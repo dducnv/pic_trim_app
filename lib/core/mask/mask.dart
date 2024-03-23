@@ -32,7 +32,8 @@ sealed class CropMask extends CustomPainter {
   Paint get borderPaint => Paint()
     ..color = maskOptions.borderColor
     ..style = PaintingStyle.stroke
-    ..strokeWidth = maskOptions.strokeWidth;
+    ..strokeWidth = maskOptions.strokeWidth
+    ..strokeWidth = 0.5;
 
   @override
   bool shouldRepaint(CropMask oldDelegate) =>

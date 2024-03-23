@@ -36,8 +36,8 @@ class _CropDragPoints extends StatelessWidget {
           child: Stack(
             children: [
               Positioned(
-                top: cropRect.top,
-                left: cropRect.left,
+                top: cropRect.top -  5,
+                left: cropRect.left - 5,
                 child: ExtendedPanDetector(
                   size: hitAreaSize,
                   onPanUpdate: (details) => _onMoveCropCorner(
@@ -52,8 +52,8 @@ class _CropDragPoints extends StatelessWidget {
                 ),
               ),
               Positioned(
-                left: cropRect.right,
-                top: cropRect.top,
+                left: cropRect.right + 5,
+                top: cropRect.top - 5,
                 child: ExtendedPanDetector(
                   size: hitAreaSize,
                   onPanUpdate: (details) => _onMoveCropCorner(
@@ -68,8 +68,8 @@ class _CropDragPoints extends StatelessWidget {
                 ),
               ),
               Positioned(
-                left: cropRect.left,
-                top: cropRect.bottom,
+                left: cropRect.left - 5,
+                top: cropRect.bottom + 5,
                 child: ExtendedPanDetector(
                   size: hitAreaSize,
                   onPanUpdate: (details) => _onMoveCropCorner(
@@ -84,8 +84,8 @@ class _CropDragPoints extends StatelessWidget {
                 ),
               ),
               Positioned(
-                left: cropRect.right,
-                top: cropRect.bottom,
+                left: cropRect.right + 5,
+                top: cropRect.bottom + 5,
                 child: ExtendedPanDetector(
                   size: hitAreaSize,
                   onPanUpdate: (details) => _onMoveCropCorner(
