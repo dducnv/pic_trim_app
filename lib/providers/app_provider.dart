@@ -21,6 +21,9 @@ class AppProvider extends ChangeNotifier {
   bool _saveImageSuccess = false;
   bool get saveImageSuccess => _saveImageSuccess;
 
+  bool _loadSaveImage = false;
+  bool get loadSaveImage => _loadSaveImage;
+
   AppProvider() : _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
 
   void toggleMode() async {
@@ -62,11 +65,12 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> setSaveImageSuccess(bool value) async {
     _saveImageSuccess = value;
+    _loadSaveImage = false;
+    notifyListeners();
     Future.delayed(const Duration(milliseconds: 2500), () {
       _saveImageSuccess = false;
       notifyListeners();
     });
-    notifyListeners();
   }
 
   void setTabEditIndex(int value) {
@@ -81,6 +85,11 @@ class AppProvider extends ChangeNotifier {
 
   void setShowOptionRoundedCorner(bool value) {
     _isShowOptionRoundedCorner = value;
+    notifyListeners();
+  }
+
+  void setLoadSaveImage(bool value) {
+    _loadSaveImage = value;
     notifyListeners();
   }
 

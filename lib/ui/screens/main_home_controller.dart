@@ -14,10 +14,8 @@ import 'package:share_plus/share_plus.dart';
 
 extension HomeScreenController on MainHomeState {
   Future<void> saveImage() async {
+          context.read<AppProvider>().setLoadSaveImage(true);
     Directory address = await getApplicationDocumentsDirectory();
-
-    
-
     if(address.existsSync()){
 
       final byteImage = await controller.cropAndRoundedCorners();
@@ -95,23 +93,15 @@ extension HomeScreenController on MainHomeState {
               ),
               ListTile(
                 onTap: () {
-                  showLicensePage(
-                      context: context,
-                      applicationVersion:
-                          "v${packageInfoGlobal.version}+${packageInfoGlobal.buildNumber}",
-                      applicationLegalese:
-                          "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.");
-                },
-                title: const Text('App version'),
-                subtitle: Text(
-                    "v${packageInfoGlobal.version}+${packageInfoGlobal.buildNumber}"),
-              ),
-              ListTile(
-                onTap: () {
                   openUrl('https://dducnv.dev');
                 },
                 title: const Text('Developer'),
                 subtitle: const Text("Duc's App Lab, Ind."),
+              ),
+               ListTile(
+                title: const Text('App version'),
+                subtitle: Text(
+                    "v${packageInfoGlobal.version}+${packageInfoGlobal.buildNumber}"),
               ),
             ],
           ),
@@ -195,6 +185,8 @@ extension HomeScreenController on MainHomeState {
       context: context,
       builder: (BuildContext context) {
         getListImage();
+            bool darkModeEnabled = Theme.of(context).brightness == Brightness.dark;
+
         return Column(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -234,6 +226,7 @@ extension HomeScreenController on MainHomeState {
                             children: value.map((FileSystemEntity file) {
                               return file is File
                                   ? InkWell(
+                                    borderRadius:           BorderRadius.circular(10),
                                       onTap: () async {
                                         showDialog(
                                           context: context,
@@ -265,10 +258,11 @@ extension HomeScreenController on MainHomeState {
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
+                                                    border: Border.all(color: darkModeEnabled ? Colors.grey[700]! : Colors.grey[300]!, width: 1),
                                               ),
                                               child: Image.file(
                                                 file,
-                                                fit: BoxFit.cover,
+                                                fit: BoxFit.contain,
                                               )),
                                           Positioned(
                                             top: 0,
@@ -285,7 +279,7 @@ extension HomeScreenController on MainHomeState {
                                                                 .circular(50))),
                                               ),
                                               enableFeedback: true,
-                                              color: Colors.red[700],
+                                              color: Colors.red[400],
                                               onPressed: () async {
                                                 //popup confirm delete
                                                 showDialog(
@@ -325,6 +319,7 @@ extension HomeScreenController on MainHomeState {
                                               },
                                               icon: const Icon(
                                                 Icons.delete,
+                                                size: 18,
                                               ),
                                             ),
                                           ),

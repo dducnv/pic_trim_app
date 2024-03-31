@@ -135,33 +135,47 @@ class MainHomeState extends State<MainHome> {
                         const Spacer(),
                         const NotifySaveImage(),
                         const SizedBox(width: 5),
-                        Selector(
-                            builder: (context, value, child) {
-                              return Ink(
-                                width: MediaQuery.of(context).size.width * 0.3,
-                                decoration: BoxDecoration(
-                                  color: value
-                                      ? const Color.fromARGB(255, 0, 93, 48)
-                                      : Colors.deepPurple[500],
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: InkWell(
+                        Consumer<AppProvider>(builder: (context, watch, child) {
+                          return Ink(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              decoration: BoxDecoration(
+                                color: watch.loadSaveImage ||
+                                        watch.saveImageSuccess
+                                    ? Colors.grey
+                                    : Colors.deepPurple[500],
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: InkWell(
                                   borderRadius: BorderRadius.circular(30),
                                   onTap: () async {
-                                    if (!value) {
+                                    if (!watch.saveImageSuccess &&
+                                        !watch.loadSaveImage) {
                                       saveImage();
                                     }
                                   },
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child:
-                                        Icon(Icons.check, color: Colors.white),
-                                  ),
-                                ),
-                              );
-                            },
-                            selector: (context, AppProvider provider) =>
-                                provider.saveImageSuccess)
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: watch.loadSaveImage
+                                          ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: Center(
+                                                child: SizedBox(
+                                                  height: 20,
+                                                  width: 20,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          : const Icon(
+                                              Icons.check,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ))));
+                        }),
                       ],
                     ),
                   );
@@ -175,15 +189,18 @@ class MainHomeState extends State<MainHome> {
             },
           ),
           actions: [
-             IconButton(
-              onPressed: () {
-                controller.cropRectNotifier.value = controller.imageRect;
-                context.read<PicEditProvider>().setAspectRatio(0);
-                controller.resetBorderRadius();
-              },
-              icon: const Icon(
-                Icons.restore,
-                size: 20,
+            Visibility(
+              visible: _bytes != null,
+              child: IconButton(
+                onPressed: () {
+                  controller.cropRectNotifier.value = controller.imageRect;
+                  context.read<PicEditProvider>().setAspectRatio(0);
+                  controller.resetBorderRadius();
+                },
+                icon: const Icon(
+                  Icons.restore,
+                  size: 20,
+                ),
               ),
             ),
             const ChangeThemeButton(),
@@ -249,38 +266,38 @@ class MainHomeState extends State<MainHome> {
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                //  ValueListenableBuilder(valueListenable:controller.cropSizeNotifier, builder: (context, value, child) {
-                                //     return  Row(
-                                //     mainAxisAlignment: MainAxisAlignment.center,
-                                //     children: [
-                                //         Row(
-                                //         children: [
-                                //          const RotatedBox(
-                                //             quarterTurns: 1,
-                                //             child: Icon(Icons.height_rounded),
-                                //           ),
-                                //           const SizedBox(width: 10),
-                                //            Text(
-                                //             '${controller.cropRectNotifier.value?.width.toStringAsFixed(2)}',
-                                //            ),
-                                //         ],
-                                      
-                                //       ),
-                                //       const SizedBox(width: 20),
-                                //       Row(
-                                //         children: [
-                                //          const Icon(Icons.height_rounded),
-                                //           const SizedBox(width: 10),
-                                //             Text(
-                                //               '${controller.cropRectNotifier.value?.height.toStringAsFixed(2)}',
-                                //             ),
-                                //         ],
-                                      
-                                //       )
-                                //     ],
-                                //   );
-                                //   }),
-                                //   const SizedBox(height: 10),
+                                  //  ValueListenableBuilder(valueListenable:controller.cropSizeNotifier, builder: (context, value, child) {
+                                  //     return  Row(
+                                  //     mainAxisAlignment: MainAxisAlignment.center,
+                                  //     children: [
+                                  //         Row(
+                                  //         children: [
+                                  //          const RotatedBox(
+                                  //             quarterTurns: 1,
+                                  //             child: Icon(Icons.height_rounded),
+                                  //           ),
+                                  //           const SizedBox(width: 10),
+                                  //            Text(
+                                  //             '${controller.cropRectNotifier.value?.width.toStringAsFixed(2)}',
+                                  //            ),
+                                  //         ],
+
+                                  //       ),
+                                  //       const SizedBox(width: 20),
+                                  //       Row(
+                                  //         children: [
+                                  //          const Icon(Icons.height_rounded),
+                                  //           const SizedBox(width: 10),
+                                  //             Text(
+                                  //               '${controller.cropRectNotifier.value?.height.toStringAsFixed(2)}',
+                                  //             ),
+                                  //         ],
+
+                                  //       )
+                                  //     ],
+                                  //   );
+                                  //   }),
+                                  //   const SizedBox(height: 10),
                                   SizedBox(
                                     height: 35,
                                     child: Row(
@@ -322,7 +339,6 @@ class MainHomeState extends State<MainHome> {
                                   ),
                                 ],
                               ),
-                          
                             ],
                           ),
                         );
