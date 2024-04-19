@@ -5,7 +5,9 @@ import 'dart:typed_data';
 import 'package:bootstrap_icons/bootstrap_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pic_trim_app/core/controller.dart';
 import 'package:pic_trim_app/provider.dart';
 import 'package:pic_trim_app/ui/screens/main_home_controller.dart';
@@ -15,7 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 class MainHome extends StatefulWidget {
-  const MainHome({Key? key}) : super(key: key);
+  const MainHome({super.key});
 
   @override
   State<MainHome> createState() => MainHomeState();
@@ -126,11 +128,23 @@ class MainHomeState extends State<MainHome> {
                         IconButton(
                             isSelected: tabEditIndex == 2,
                             icon: const Icon(Icons.file_download),
-                            onPressed: () {
-                              Directory path = Directory(
-                                  context.read<AppProvider>().addressSaveImage);
+                            onPressed: () async {
+                              var status = await Permission.storage.status;
+                              if (!status.isGranted) {
+                                await Permission.storage.request();
+                              }
+                              late Directory directory;
+                              Directory directoryOther =
+                                  Directory("/storage/emulated/0/PicTrim");
+                              if (directoryOther.existsSync()) {
+                                directory = directoryOther;
+                              } else {
+                                directory = Directory(context
+                                    .read<AppProvider>()
+                                    .addressSaveImage);
+                              }
                               modalBottomSheetListImage(context,
-                                  directory: path);
+                                  directory: directory);
                             }),
                         const Spacer(),
                         const NotifySaveImage(),
@@ -189,6 +203,27 @@ class MainHomeState extends State<MainHome> {
             },
           ),
           actions: [
+            Visibility(
+              visible: _bytes == null,
+              child: IconButton(
+                  icon: const Icon(Icons.file_download),
+                  onPressed: () async {
+                    var status = await Permission.storage.status;
+                    if (!status.isGranted) {
+                      await Permission.storage.request();
+                    }
+                    late Directory directory;
+                    Directory directoryOther =
+                        Directory("/storage/emulated/0/PicTrim");
+                    if (directoryOther.existsSync()) {
+                      directory = directoryOther;
+                    } else {
+                      directory = Directory(
+                          context.read<AppProvider>().addressSaveImage);
+                    }
+                    modalBottomSheetListImage(context, directory: directory);
+                  }),
+            ),
             Visibility(
               visible: _bytes != null,
               child: IconButton(

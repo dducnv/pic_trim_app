@@ -14,25 +14,27 @@ import 'package:share_plus/share_plus.dart';
 
 extension HomeScreenController on MainHomeState {
   Future<void> saveImage() async {
-          context.read<AppProvider>().setLoadSaveImage(true);
-    Directory address = await getApplicationDocumentsDirectory();
-    if(address.existsSync()){
+    try {
+      context.read<AppProvider>().setLoadSaveImage(true);
+      Directory address = await getApplicationDocumentsDirectory();
+      if (address.existsSync()) {
+        final byteImage = await controller.cropAndRoundedCorners();
+        // //dd-MM-yyyy_hh-mm-ss
+        final date =
+            "${DateTime.now().year}${DateTime.now().month}${DateTime.now().day}_${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}";
+        final file = File('${address.path}/PicTrim_$date.png');
+        await file.writeAsBytes(byteImage);
+        await GallerySaver.saveImage(file.path, albumName: 'PicTrim');
+        await file.delete();
 
-      final byteImage = await controller.cropAndRoundedCorners();
-      // //dd-MM-yyyy_hh-mm-ss
-      final date =
-          "${DateTime.now().year}${DateTime.now().month}${DateTime.now().day}_${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}";
-      final file = File('${address.path}/PicTrim_$date.png');
-      await file.writeAsBytes(byteImage);
-      await GallerySaver.saveImage(file.path, albumName: 'PicTrim');
-      await  file.delete();
-
-      //remove file
-      // file.delete();
-      // ignore: use_build_context_synchronously
-      context.read<AppProvider>().setSaveImageSuccess(true);
+        //remove file
+        // file.delete();
+        // ignore: use_build_context_synchronously
+        context.read<AppProvider>().setSaveImageSuccess(true);
+      }
+    } catch (exception) {
+      print(exception.toString());
     }
-    
   }
 
   Future<void> showBottomSheetInfoApp({required BuildContext context}) async {
@@ -59,14 +61,14 @@ extension HomeScreenController on MainHomeState {
               ListTile(
                 onTap: () {
                   final Uri params = Uri(
-                      scheme: 'mailto',
-                      path: 'contact@dducnv.dev',
-                    );
+                    scheme: 'mailto',
+                    path: 'contact@dducnv.dev',
+                  );
                   String url = params.toString();
                   openUrl(url);
                 },
                 leading: const Icon(Icons.mail_outline),
-                title: const Text('Feature Requests and Bug Reports'),
+                title: const Text('Feature Request and Bug Report'),
               ),
               ListTile(
                 leading: const Icon(Icons.privacy_tip_outlined),
@@ -82,14 +84,12 @@ extension HomeScreenController on MainHomeState {
                     'assets/md/terms_of_service.md',
                     context: context),
               ),
-
               ListTile(
                 leading: const Icon(Icons.star_outline),
                 onTap: () {
                   inAppReview.requestReview();
                 },
                 title: const Text('Rate this app'),
-               
               ),
               ListTile(
                 onTap: () {
@@ -98,10 +98,9 @@ extension HomeScreenController on MainHomeState {
                 title: const Text('Developer'),
                 subtitle: const Text("Duc's App Lab, Ind."),
               ),
-               ListTile(
+              ListTile(
                 title: const Text('App version'),
-                subtitle: Text(
-                    "v${packageInfoGlobal.version}+${packageInfoGlobal.buildNumber}"),
+                subtitle: Text("v${packageInfoGlobal.version}"),
               ),
             ],
           ),
@@ -161,12 +160,12 @@ extension HomeScreenController on MainHomeState {
     );
   }
 
-
   Future<void> modalBottomSheetListImage(BuildContext context,
       {required Directory directory}) {
     ValueNotifier<List<FileSystemEntity>> listImage = ValueNotifier([]);
 
     void getListImage() async {
+      print(await directory.list().length);
       listImage.value = await directory
           .list()
           .where((event) =>
@@ -185,7 +184,7 @@ extension HomeScreenController on MainHomeState {
       context: context,
       builder: (BuildContext context) {
         getListImage();
-            bool darkModeEnabled = Theme.of(context).brightness == Brightness.dark;
+        bool darkModeEnabled = Theme.of(context).brightness == Brightness.dark;
 
         return Column(
           mainAxisSize: MainAxisSize.max,
@@ -226,7 +225,7 @@ extension HomeScreenController on MainHomeState {
                             children: value.map((FileSystemEntity file) {
                               return file is File
                                   ? InkWell(
-                                    borderRadius:           BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(10),
                                       onTap: () async {
                                         showDialog(
                                           context: context,
@@ -258,7 +257,11 @@ extension HomeScreenController on MainHomeState {
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
-                                                    border: Border.all(color: darkModeEnabled ? Colors.grey[700]! : Colors.grey[300]!, width: 1),
+                                                border: Border.all(
+                                                    color: darkModeEnabled
+                                                        ? Colors.grey[700]!
+                                                        : Colors.grey[300]!,
+                                                    width: 1),
                                               ),
                                               child: Image.file(
                                                 file,
@@ -421,4 +424,3 @@ extension HomeScreenController on MainHomeState {
     );
   }
 }
-
