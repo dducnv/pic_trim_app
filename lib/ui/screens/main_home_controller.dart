@@ -165,7 +165,6 @@ extension HomeScreenController on MainHomeState {
     ValueNotifier<List<FileSystemEntity>> listImage = ValueNotifier([]);
 
     void getListImage() async {
-      print(await directory.list().length);
       listImage.value = await directory
           .list()
           .where((event) =>
@@ -178,6 +177,7 @@ extension HomeScreenController on MainHomeState {
                   event.path.endsWith('.png') ||
                   event.path.endsWith('.jpeg')))
           .toList();
+      listImage.value.sort((a, b) => b.path.compareTo(a.path));
     }
 
     return showModalBottomSheet(
